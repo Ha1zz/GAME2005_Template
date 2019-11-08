@@ -1,4 +1,4 @@
-#include "ship.h"
+#include "Villain.h"
 #include "Game.h"
 #include "Util.h"
 #include "GLM/gtx/rotate_vector.hpp"
@@ -6,39 +6,39 @@
 #include "GLM/gtx/string_cast.hpp"
 
 
-Ship::Ship() :
+Villain::Villain() :
 	m_maxSpeed(5.0f), m_currentDirection(0.0f), m_turnSpeed(2.0f), m_steerForce(0.1f), m_currentTile(NULL)
 {
 
-	string fileName = "../Assets/textures/grenade.jpg";
+	string fileName = "../Assets/textures/stormtropper.png";
 	TheTextureManager::Instance()->load(fileName,
-		"ship", TheGame::Instance()->getRenderer());
+		"villain", TheGame::Instance()->getRenderer());
 
-	glm::vec2 size = TheTextureManager::Instance()->getTextureSize("ship");
+	glm::vec2 size = TheTextureManager::Instance()->getTextureSize("villain");
 	setWidth(size.x);
 	setHeight(size.y);
 	setPosition(glm::vec2(400.0f, 300.0f));
 	setVelocity(glm::vec2(0.0f, 0.0f));
 	setAcceleration(glm::vec2(0.0f, 0.0f));
 	setIsColliding(false);
-	setType(GameObjectType::SHIP);
+	setType(GameObjectType::VILLAIN);
 	setState(State::IDLE);
 }
 
-Ship::~Ship()
+Villain::~Villain()
 {
 }
 
-void Ship::draw()
+void Villain::draw()
 {
 	int xComponent = getPosition().x;
 	int yComponent = getPosition().y;
 
-	TheTextureManager::Instance()->draw("ship", xComponent, yComponent,
+	TheTextureManager::Instance()->draw("villain", xComponent, yComponent,
 		TheGame::Instance()->getRenderer(), m_currentDirection, 255, true);
 }
 
-void Ship::m_checkState()
+void Villain::m_checkState()
 {
 	switch (getState())
 	{
@@ -58,28 +58,28 @@ void Ship::m_checkState()
 	}
 }
 
-void Ship::update()
+void Villain::update()
 {
 	move();
 }
 
-void Ship::clean()
+void Villain::clean()
 {
 	delete m_currentTile;
 	m_currentTile = NULL;
 }
 
-void Ship::turnRight()
+void Villain::turnRight()
 {
 	m_currentDirection += m_turnSpeed;
-	if (m_currentDirection >= 360) 
+	if (m_currentDirection >= 360)
 	{
 		m_currentDirection = 0;
 	}
 
 }
 
-void Ship::turnLeft()
+void Villain::turnLeft()
 {
 	m_currentDirection -= m_turnSpeed;
 	if (m_currentDirection < 0)
@@ -88,7 +88,7 @@ void Ship::turnLeft()
 	}
 }
 
-void Ship::move()
+void Villain::move()
 {
 	if (Util::distance(getPosition(), m_target) > 1.0f) {
 		glm::vec2 desired = Util::normalize(m_target - getPosition()) * m_maxSpeed;
@@ -98,32 +98,32 @@ void Ship::move()
 		glm::vec2 newPosition = getPosition() + getVelocity();
 		setPosition(newPosition);
 	}
-	
+
 
 }
 
-Tile * Ship::getTile()
+Tile * Villain::getTile()
 {
 	return m_currentTile;
 }
 
-void Ship::setTile(Tile* newTile)
+void Villain::setTile(Tile* newTile)
 {
 	m_currentTile = newTile;
 }
 
-glm::vec2 Ship::getTarget()
+glm::vec2 Villain::getTarget()
 {
 	return m_target;
 }
 
-void Ship::setTarget(glm::vec2 position)
+void Villain::setTarget(glm::vec2 position)
 {
 	m_target = position;
 }
 
 
-void Ship::m_checkBounds()
+void Villain::m_checkBounds()
 {
 
 	if (getPosition().x > Config::SCREEN_WIDTH)
@@ -148,7 +148,7 @@ void Ship::m_checkBounds()
 
 }
 
-void Ship::m_reset()
+void Villain::m_reset()
 {
 	setIsColliding(false);
 	int halfWidth = getWidth() * 0.5;
@@ -157,7 +157,7 @@ void Ship::m_reset()
 	setPosition(glm::vec2(xComponent, yComponent));
 }
 
-void Ship::m_seek()
+void Villain::m_seek()
 {
 	glm::vec2 desired = Util::normalize(m_target - getPosition()) * m_maxSpeed;
 	glm::vec2 steer = (desired - getVelocity());
@@ -165,3 +165,4 @@ void Ship::m_seek()
 	steer = Util::limitMagnitude(steer, m_steerForce);
 	setAcceleration(steer);
 }
+

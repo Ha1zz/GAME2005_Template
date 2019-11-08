@@ -38,7 +38,7 @@ int main(int argc, char * args[])
 	freopen("CON", "w", stdout);
 
 
-	TheGame::Instance()->init("Hello World", 100, 100, 800, 600, false);
+	TheGame::Instance()->init("Hello World", 0, 0, 1024, 768, false);
 
 	while (TheGame::Instance()->running())
 	{
@@ -58,6 +58,7 @@ int main(int argc, char * args[])
 		TheGame::Instance()->setFrames(frames);
 
 	}
+
 
 	TheGame::Instance()->clean();
 	return 0;

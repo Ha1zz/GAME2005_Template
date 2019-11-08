@@ -1,6 +1,4 @@
 #pragma once
-#ifndef __Ship__
-#define __Ship__
 
 #include <vector>
 
@@ -9,13 +7,13 @@
 #include "SoundManager.h"
 #include "Tile.h"
 #include "Scene.h"
-
-class Ship :
+class Hero :
 	public DisplayObject
 {
 public:
-	Ship();
-	~Ship();
+public:
+	Hero();
+	~Hero();
 
 	// Inherited via GameObject
 	void draw() override;
@@ -52,7 +50,4 @@ private:
 
 	Tile* m_currentTile;
 };
-
-
-#endif /* defined (__Ship__) */
 

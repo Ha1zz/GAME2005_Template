@@ -19,8 +19,11 @@ void StartScene::draw()
 {
 	/*m_pStartLabel->draw();
 	m_pInstructionsLabel->draw();*/
-
+	m_pPlanet->draw();
+	m_pVillain->draw();
+	m_pHero->draw();
 	m_pShip->draw();
+
 
 	if (m_displayUI)
 	{
@@ -49,6 +52,9 @@ void StartScene::clean()
 	delete m_pInstructionsLabel;*/
 
 	delete m_pShip;
+	delete m_pPlanet;
+	delete m_pHero;
+	delete m_pVillain;
 
 	removeAllChildren();
 }
@@ -170,8 +176,17 @@ void StartScene::start()
 	addChild(m_pInstructionsLabel)*/
 
 	m_pShip = new Ship();
-	m_pShip->setPosition(glm::vec2(400.0f, 300.0f));
+	m_pShip->setPosition(glm::vec2(60.0f, 300.0f));
 	addChild(m_pShip);
+	m_pPlanet = new Planet();
+	m_pPlanet->setPosition(glm::vec2(512.0f, 384.0f));
+	addChild(m_pPlanet);
+	m_pHero = new Hero();
+	m_pHero->setPosition(glm::vec2(38.0f, 370.0f));
+	addChild(m_pHero);
+	m_pVillain = new Villain();
+	m_pVillain->setPosition(glm::vec2(990.0f, 420.0f));
+	addChild(m_pVillain);
 }
 
 void StartScene::m_ImGuiKeyMap()
@@ -293,7 +308,7 @@ void StartScene::m_updateUI()
 		ImGui::Begin("About Physics", &m_displayAbout, ImGuiWindowFlags_AlwaysAutoResize);
 		ImGui::Separator();
 		ImGui::Text("Authors:");
-		ImGui::Text("Tran Thien Phu ");
+		ImGui::Text("Tran Thien Phu - Cameron Akey - Benjamin Frank");
 		ImGui::End();
 	}
 
@@ -308,14 +323,16 @@ void StartScene::m_updateUI()
 	if (ImGui::Button("Reset All"))
 	{
 		m_isGravityEnabled = false;
-		m_pShip->setPosition(glm::vec2(400.0f, 300.0f));
+		m_pShip->setPosition(glm::vec2(60.0f, 300.0f));
 		m_gravity = 9.8f;
-		m_PPM = 5.0f;
+		m_PPM = 10.0f; // original 5.0f
 		m_Atime = 0.016667f;
-		m_angle = 45.0f;
+		m_angle = 14.671f;
 		m_velocity = 100.0f;
 		m_velocityX = 0.0f;
 		m_velocityY = 0.0f;
+		m_mass = 3.2f;
+		m_forceX = 0.4f;
 	}
 
 
@@ -330,7 +347,7 @@ void StartScene::m_updateUI()
 
 	}
 
-	if (ImGui::SliderFloat("Kicking Angle", &m_angle, 0.0f, 90.0f, "%.1f"))
+	if (ImGui::SliderFloat("Thrown Angle", &m_angle, 0.0f, 90.0f, "%.1f"))
 	{
 
 	}
@@ -349,7 +366,14 @@ void StartScene::m_updateUI()
 	{
 
 	}
+	if (ImGui::SliderFloat("Mass", &m_mass, 0.0f, 100.0f, "%.1f"))
+	{
 
+	}
+	if (ImGui::SliderFloat("Horizontal Wind Force ", &m_forceX, -50.0f, 50.0f, "%.1f"))
+	{
+
+	}
 
 	//ImGui::SameLine();
 
@@ -554,10 +578,23 @@ void StartScene::m_move()
 	m_velocityY = m_velocity * m_PPM * -sin(m_angle * Deg2Rad);
 	glm::vec2 velocity_vector = glm::vec2(m_velocityX, m_velocityY);
 
-	m_acceleration = glm::vec2(0.0f, m_gravity) * m_PPM;
-	m_finalPosition = m_pShip->getPosition() + 
-		(velocity_vector * m_time) +
-		(0.5f * m_acceleration * (m_Atime * m_Atime));
+	m_accelerationX = (m_forceX / m_mass);
+	
+	cout << m_accelerationX << endl;
+
+	m_acceleration = glm::vec2(m_accelerationX, m_gravity) * m_PPM;
+
+	if (m_pShip->getPosition().x + 35 > m_pVillain->getPosition().x && m_pShip->getPosition().x + 35 < m_pVillain->getPosition().x + 70 &&
+		m_pShip->getPosition().y + 40 > m_pVillain->getPosition().y && m_pShip->getPosition().y + 40 < m_pVillain->getPosition().y + 200)
+	{
+		m_finalPosition = m_pShip->getPosition();
+	}
+	else
+	{
+		m_finalPosition = m_pShip->getPosition() +
+			(velocity_vector * m_time) +
+			(0.5f * m_acceleration * (m_Atime * m_Atime));
+	}
 	
 	m_Atime += m_time;
 	m_pShip->setPosition(m_finalPosition);

@@ -12,7 +12,9 @@ enum GameObjectType {
 	PLANET,
 	MINE,
 	TILE,
-	NUM_OF_TYPES
+	NUM_OF_TYPES,
+	HERO,
+	VILLAIN
 };
 
 enum State {

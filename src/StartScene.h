@@ -6,6 +6,12 @@
 #include "Scene.h"
 #include "Label.h"
 #include "ship.h"
+#include "Planet.h"
+#include "Hero.h"
+#include "Villain.h"
+
+#include <iostream>
+using namespace std;
 
 class StartScene : public Scene
 {
@@ -25,6 +31,9 @@ private:
 	Label* m_pInstructionsLabel;*/
 
 	Ship* m_pShip;
+	Planet* m_pPlanet;
+	Hero* m_pHero;
+	Villain* m_pVillain;
 
 	glm::vec2 m_mousePosition;
 
@@ -43,7 +52,9 @@ private:
 	const float Rad2Deg = 57.2957795130f;
 	bool m_isGravityEnabled = false;
 	float m_gravity = 9.8f;
-	float m_PPM = 5.0f; // pixels per meters
+	float m_PPM = 10.0f; // pixels per meters // original 5.0f
+	float m_mass = 3.2f;
+
 
 	glm::vec2 m_finalPosition = glm::vec2(0.0f, 0.0f);
 
@@ -52,10 +63,14 @@ private:
 	float m_velocityY = 0.0f;
 
 	glm::vec2 m_acceleration = glm::vec2(0.0f, 0.0f);
+	float m_accelerationX = 0.0f;
+	
+	float m_forceX = 0.4f;
+
 	float m_time = 0.016667f;
 	float m_Atime = 0.016667f; // accumulated time
 
-	float m_angle = 45.0f;
+	float m_angle = 14.671f;
 	//Physics Functions
 
 	void m_move();

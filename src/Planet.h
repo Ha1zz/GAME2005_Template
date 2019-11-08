@@ -8,7 +8,6 @@
 #include "Tile.h"
 #include "Scene.h"
 
-
 class Planet : public DisplayObject
 {
 public:

@@ -4,7 +4,7 @@
 Planet::Planet():
 	m_currentTile(NULL)
 {
-	TheTextureManager::Instance()->load("../Assets/textures/planet.png",
+	TheTextureManager::Instance()->load("../Assets/textures/background.jpg",
 		"planet", TheGame::Instance()->getRenderer());
 
 	glm::vec2 size = TheTextureManager::Instance()->getTextureSize("planet");
