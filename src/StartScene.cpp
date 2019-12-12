@@ -20,25 +20,42 @@ void StartScene::draw()
 	/*m_pStartLabel->draw();
 	m_pInstructionsLabel->draw();*/
 	m_pPlanet->draw();
-	m_pVillain->draw();
-	m_pHero->draw();
+	//m_pVillain->draw();
+	//m_pHero->draw();
 	m_pShip->draw();
-
+	/*m_pMine->draw();*/
 
 	if (m_displayUI)
 	{
 		ImGui::Render();
 		ImGuiSDL::Render(ImGui::GetDrawData());
 		SDL_SetRenderDrawColor(TheGame::Instance()->getRenderer(), 255, 255, 255, 255);
+
 	}
 }
 
 void StartScene::update()
 {
-	if (m_isGravityEnabled)
-	{
-		m_move();
-	}
+	//if (m_isGravityEnabled)
+	//{
+	//	m_move();
+	//}
+	m_move();
+
+	m_pShip->update();
+	/*m_pMine->update();*/
+
+	m_pPlanet->update();
+
+	//CollisionManager::squaredRadiusCheck(m_pShip,m_pPlanet);
+	//CollisionManager::squaredRadiusCheck(m_pShip, m_pMine);
+
+	//CollisionManager::AABBCheck(m_pShip, m_pPlanet);
+	//CollisionManager::AABBCheck(m_pShip, m_pMine);
+
+
+	CollisionManager::circleAABBCheck(m_pPlanet, m_pShip);
+
 
 	if (m_displayUI)
 	{
@@ -53,8 +70,8 @@ void StartScene::clean()
 
 	delete m_pShip;
 	delete m_pPlanet;
-	delete m_pHero;
-	delete m_pVillain;
+	//delete m_pHero;
+	//delete m_pVillain;
 
 	removeAllChildren();
 }
@@ -94,16 +111,16 @@ void StartScene::handleEvents()
 
 				/************************************************************************/
 			case SDLK_w:
-
+				m_moveState = MOVE_UP;
 				break;
 			case SDLK_s:
-
+				m_moveState = MOVE_DOWN;
 				break;
 			case SDLK_a:
-
+				m_moveState = MOVE_LEFT;
 				break;
 			case SDLK_d:
-
+				m_moveState = MOVE_RIGHT;
 				break;
 			}
 			{
@@ -120,18 +137,18 @@ void StartScene::handleEvents()
 			switch (event.key.keysym.sym)
 			{
 			case SDLK_w:
-
+				m_moveState = MOVE_IDLE;
 				break;
 
 			case SDLK_s:
-
+				m_moveState = MOVE_IDLE;
 				break;
 
 			case SDLK_a:
-
+				m_moveState = MOVE_IDLE;
 				break;
 			case SDLK_d:
-
+				m_moveState = MOVE_IDLE;
 				break;
 			}
 			{
@@ -175,18 +192,39 @@ void StartScene::start()
 	m_pInstructionsLabel->setParent(this);
 	addChild(m_pInstructionsLabel)*/
 
+	TheSoundManager::Instance()->load("../Assets/audio/yay.ogg", "yay",SOUND_SFX);
+	TheSoundManager::Instance()->load("../Assets/audio/thunder.ogg", "thunder", SOUND_SFX);
+
 	m_pShip = new Ship();
-	m_pShip->setPosition(glm::vec2(60.0f, 300.0f));
+	m_pShip->setPosition(glm::vec2(300.0f, 300.0f));
 	addChild(m_pShip);
+
 	m_pPlanet = new Planet();
-	m_pPlanet->setPosition(glm::vec2(512.0f, 384.0f));
+	m_pPlanet->setPosition(glm::vec2(512.0f, 400.0f));
 	addChild(m_pPlanet);
-	m_pHero = new Hero();
-	m_pHero->setPosition(glm::vec2(38.0f, 370.0f));
-	addChild(m_pHero);
-	m_pVillain = new Villain();
-	m_pVillain->setPosition(glm::vec2(990.0f, 420.0f));
-	addChild(m_pVillain);
+	//m_pPlanet->setAcceleration(glm::vec2(0.0f, m_gravity));
+
+
+
+	//m_pHero = new Hero();
+	//m_pHero->setPosition(glm::vec2(38.0f, 370.0f));
+	//addChild(m_pHero);
+	//m_pVillain = new Villain();
+	//m_pVillain->setPosition(glm::vec2(990.0f, 420.0f));
+	//addChild(m_pVillain);
+
+	//m_pMine = new Mine();
+	//m_pMine->setPosition(glm::vec2(200.0f, 200.0f));
+
+
+	m_moveState = MOVE_IDLE;
+
+	//m_heightZeroBall = 768 - m_pPlanet->getPosition().y + m_pPlanet->getHeight() / 2;
+	//m_heightTempBall = m_heightZeroBall;
+	//m_heightMaxBall = m_heightZeroBall;
+	//m_heightStopBall = 768 - (768 - m_pPlanet->getHeight() / 2);
+	//m_timeLastBall = -sqrt((2 * m_heightZeroBall) / m_gravity);
+	//m_velocityMaxBall = sqrt(2 * m_heightMaxBall * m_gravity);
 }
 
 void StartScene::m_ImGuiKeyMap()
@@ -313,67 +351,67 @@ void StartScene::m_updateUI()
 	}
 
 	/*************************************************************************************************/
-	if (ImGui::Button("Toggle Gravity"))
-	{
-		m_isGravityEnabled =  (m_isGravityEnabled) ? false : true;
-	}
+	//if (ImGui::Button("Toggle Gravity"))
+	//{
+	//	m_isGravityEnabled =  (m_isGravityEnabled) ? false : true;
+	//}
 
-	ImGui::SameLine();
+	//ImGui::SameLine();
 
-	if (ImGui::Button("Reset All"))
-	{
-		m_isGravityEnabled = false;
-		m_pShip->setPosition(glm::vec2(60.0f, 300.0f));
-		m_gravity = 9.8f;
-		m_PPM = 10.0f; // original 5.0f
-		m_Atime = 0.016667f;
-		m_angle = 14.671f;
-		m_velocity = 100.0f;
-		m_velocityX = 0.0f;
-		m_velocityY = 0.0f;
-		m_mass = 3.2f;
-		m_forceX = 0.4f;
-	}
+	//if (ImGui::Button("Reset All"))
+	//{
+	//	m_isGravityEnabled = false;
+	//	m_pShip->setPosition(glm::vec2(60.0f, 300.0f));
+	//	m_gravity = 9.8f;
+	//	m_PPM = 10.0f; // original 5.0f
+	//	m_Atime = 0.016667f;
+	//	m_angle = -90.0f;
+	//	/*m_velocity = 100.0f;*/
+	//	m_velocityX = 0.0f;
+	//	m_velocityY = 0.0f;
+	//	m_mass = 3.2f;
+	//	m_forceX = 0.4f;
+	//}
 
 
 	ImGui::PushItemWidth(80);
-	if (ImGui::SliderFloat("Gravity", &m_gravity, 0.1f, 30.0f, "%.1f"))
-	{
-		
-	}
+	//if (ImGui::SliderFloat("Gravity", &m_gravity, 0.1f, 30.0f, "%.1f"))
+	//{
+	//	
+	//}
 
-	if (ImGui::SliderFloat("Pixels Per Meters", &m_PPM, 1.0f, 30.0f, "%.1f"))
-	{
+	//if (ImGui::SliderFloat("Pixels Per Meters", &m_PPM, 1.0f, 30.0f, "%.1f"))
+	//{
 
-	}
+	//}
 
-	if (ImGui::SliderFloat("Thrown Angle", &m_angle, 0.0f, 90.0f, "%.1f"))
-	{
+	//if (ImGui::SliderFloat("Thrown Angle", &m_angle, 0.0f, 90.0f, "%.1f"))
+	//{
 
-	}
+	//}
 
-	if (ImGui::SliderFloat("Velocity", &m_velocity, 0.0f, 200.0f, "%.1f"))
-	{
+	//if (ImGui::SliderFloat("Velocity", &m_velocity, 0.0f, 200.0f, "%.1f"))
+	//{
 
-	}
+	//}
 
-	if (ImGui::SliderFloat("Time ", &m_time, 0.000001f, 0.20f, "%.1f"))
-	{
+	//if (ImGui::SliderFloat("Time ", &m_time, 0.000001f, 0.20f, "%.1f"))
+	//{
 
-	}
+	//}
 
-	if (ImGui::SliderFloat("Time Accumulation", &m_Atime, 0.000001f, 0.20f, "%.1f"))
-	{
+	//if (ImGui::SliderFloat("Time Accumulation", &m_Atime, 0.000001f, 0.20f, "%.1f"))
+	//{
 
-	}
-	if (ImGui::SliderFloat("Mass", &m_mass, 0.0f, 100.0f, "%.1f"))
-	{
+	//}
+	//if (ImGui::SliderFloat("Mass", &m_mass, 0.0f, 100.0f, "%.1f"))
+	//{
 
-	}
-	if (ImGui::SliderFloat("Horizontal Wind Force ", &m_forceX, -50.0f, 50.0f, "%.1f"))
-	{
+	//}
+	//if (ImGui::SliderFloat("Horizontal Wind Force ", &m_forceX, -50.0f, 50.0f, "%.1f"))
+	//{
 
-	}
+	//}
 
 	//ImGui::SameLine();
 
@@ -574,28 +612,181 @@ void StartScene::m_updateUI()
 
 void StartScene::m_move()
 {
-	m_velocityX = m_velocity * m_PPM * cos(m_angle * Deg2Rad);
-	m_velocityY = m_velocity * m_PPM * -sin(m_angle * Deg2Rad);
-	glm::vec2 velocity_vector = glm::vec2(m_velocityX, m_velocityY);
 
-	m_accelerationX = (m_forceX / m_mass);
-	
-	cout << m_accelerationX << endl;
-
-	m_acceleration = glm::vec2(m_accelerationX, m_gravity) * m_PPM;
-
-	if (m_pShip->getPosition().x + 35 > m_pVillain->getPosition().x && m_pShip->getPosition().x + 35 < m_pVillain->getPosition().x + 70 &&
-		m_pShip->getPosition().y + 40 > m_pVillain->getPosition().y && m_pShip->getPosition().y + 40 < m_pVillain->getPosition().y + 200)
+	switch (m_moveState)
 	{
-		m_finalPosition = m_pShip->getPosition();
+	case MOVE_IDLE:
+		m_velocity = glm::vec2(0.0f, 0.0f);
+			break;
+	case MOVE_UP:
+		m_velocity = glm::vec2(0.0f, -1.0f);
+			break;
+	case MOVE_LEFT:
+		m_velocity = glm::vec2(-1.0f, 0.0f);
+		break;
+	case MOVE_DOWN:
+		m_velocity = glm::vec2(0.0f, 1.0f);
+		break;
+	case MOVE_RIGHT:
+		m_velocity = glm::vec2(1.0f, 0.0f);
+		break;
 	}
-	else
-	{
-		m_finalPosition = m_pShip->getPosition() +
-			(velocity_vector * m_time) +
-			(0.5f * m_acceleration * (m_Atime * m_Atime));
-	}
+
+
+	m_finalPosition = m_pShip->getPosition() + m_velocity * m_speed;
+
+
+
+
+
+	//m_velocityXBall = m_velocityBall * cos(m_angle * m_PPM * Deg2Rad);
+	//m_velocityYBall = m_velocityBall * m_PPM * -sin(m_angle * Deg2Rad);
+
+	//m_accelerationXBall = (m_forceXBall / m_mass);
+
+	//m_accelerationXBall = 0.0f * m_PPM;
+	//m_accelerationYBall = m_gravity * m_PPM;
+
+	//if (m_heightMaxBall > m_heightStopBall)
+	//{
+	//	if ((m_pPlanet->getPosition().y + m_pPlanet->getHeight() / 2) > 768.0f && m_pPlanet->getVelocity().y >= 0.0f)
+	//	{
+	//		m_velocityMaxBall = sqrt(2 * m_heightMaxBall * m_gravity);
+	//		m_velocityYBall = m_velocityYBall + (-m_velocityMaxBall * 0.574);
+	//		m_heightMaxBall = (0.5f * m_velocityYBall * m_velocityYBall) / (m_gravity);
+	//		m_pPlanet->setVelocity(glm::vec2(0.0f, m_velocityYBall));
+	//	}
+	//	if (m_pPlanet->getPosition().y < ((m_pPlanet->getHeight() * 0.5f)) && (m_pPlanet->getVelocity().y < 0.0f))
+	//	{
+	//		//m_pPlanet->setVelocity(glm::vec2(m_pPlanet->getVelocity().x, -m_pPlanet->getVelocity().y * 0.45));
+	//	}
+	//	if (m_pPlanet->getPosition().x + m_pPlanet->getWidth() * 0.5f > 1024.0f && m_pPlanet->getVelocity().x >= 0.0f)
+	//	{
+	//		//m_pPlanet->setVelocity(glm::vec2(-m_pPlanet->getVelocity().x * 0.45, m_pPlanet->getVelocity().y));
+	//	}
+	//	if (m_pPlanet->getPosition().x < (m_pPlanet->getHeight() * 0.5f) && m_pPlanet->getVelocity().x < 0.0f)
+	//	{
+	//		//m_pPlanet->setVelocity(glm::vec2(-m_pPlanet->getVelocity().x * 0.45, m_pPlanet->getVelocity().y));
+	//	}
+	//	else
+	//	{
+	//		isFreeFallBall = true;
+	//	}
+	//}
+	//else
+	//{
+	//	m_finalPositionBall.y = 768 - (m_pPlanet->getHeight() / 2);
+	//}
+
+	//if (isFreeFallBall = true)
+	//{
+	//	m_finalPositionBall = m_pPlanet->getPosition() +
+	//		(m_pPlanet->getVelocity() * m_Atime) +
+	//		(0.5f * m_pPlanet->getAcceleration() * (m_Atime * m_Atime));
+	//}
+
+	//if ((m_pPlanet->getPosition().y + m_pPlanet->getHeight() / 2) > 768.0f && m_pPlanet->getVelocity().y >= 0.0f)
+	//{
+	//	m_velocityMaxBall = sqrt(2 * m_heightMaxBall * m_gravity);
+	//	m_velocityYBall = m_velocityYBall + (-m_velocityMaxBall * 0.25);
+	//	m_heightMaxBall = (0.5f * m_velocityYBall * m_velocityYBall) / (m_gravity);
+	//	m_pPlanet->setVelocity(glm::vec2(0.0f, m_velocityYBall));
+	//}
+
+	//cout << "Max Ball:" <<m_heightMaxBall << endl;
+	//cout << "Stop Ball:"<<m_heightStopBall << endl;
+	//if (m_pPlanet->getPosition().y < ((m_pPlanet->getHeight() * 0.5f)) && (m_pPlanet->getVelocity().y < 0.0f))
+	//{
+	//	m_pPlanet->setVelocity(glm::vec2(m_pPlanet->getVelocity().x, -m_pPlanet->getVelocity().y * 0.45));
+	//}
+	//if (m_pPlanet->getPosition().x + m_pPlanet->getWidth() * 0.5f > 1024.0f && m_pPlanet->getVelocity().x >= 0.0f)
+	//{
+	//	m_pPlanet->setVelocity(glm::vec2(-m_pPlanet->getVelocity().x * 0.45, m_pPlanet->getVelocity().y));
+	//}
+	//if (m_pPlanet->getPosition().x < (m_pPlanet->getHeight() * 0.5f) && m_pPlanet->getVelocity().x < 0.0f)
+	//{
+	//	m_pPlanet->setVelocity(glm::vec2(-m_pPlanet->getVelocity().x * 0.45, m_pPlanet->getVelocity().y));
+	//}
+	//else
+	//{
+	//	//m_pPlanet->setVelocity(glm::vec2(0.0f, m_pPlanet->getAcceleration().y * m_Atime));
+	//	m_finalPositionBall = m_pPlanet->getPosition() +
+	//		(m_pPlanet->getVelocity() * m_Atime) +
+	//		(0.5f * m_pPlanet->getAcceleration() * (m_Atime * m_Atime));
+	//}
 	
+
+
+	//else
+	//{	
+	//	m_pPlanet->setVelocity(glm::vec2(0.0f, m_pPlanet->getAcceleration().y * m_Atime));
+	//}
+	
+
+	//m_pPlanet->setAcceleration(glm::vec2(0.0f * m_PPM, m_gravity));
+	//m_pPlanet->setVelocity(glm::vec2(0.0f, m_pPlanet->getAcceleration().y));
+
+	//m_accelerationBall = glm::vec2(m_accelerationXBall, m_accelerationYBall);
+	//velocity_vectorBall = glm::vec2(m_velocityXBall, m_velocityYBall);
+
+	//if (m_heightMaxBall <= m_heightZeroBall)
+	//{
+	//	m_finalPositionBall = m_pPlanet->getPosition() +
+	//		(velocity_vectorBall * m_Atime) +
+	//		(0.5f * m_accelerationBall * (m_Atime * m_Atime));
+	//}
+
+	//m_finalPositionBall = m_pPlanet->getPosition() +
+	//	(m_pPlanet->getVelocity() * m_Atime) +
+	//	(0.5f * m_pPlanet->getAcceleration() * (m_Atime * m_Atime));
+
+
+	//if ((m_heightMaxBall < m_heightStopBall + 30) && (m_finalPositionBall.y + m_pPlanet->getHeight()/2 > 768))
+	//{
+	//	m_finalPositionBall.y = 768 - (m_pPlanet->getHeight() / 2);
+	//}
+
+	//m_finalPositionBall = m_pPlanet->getPosition() + (0.5f * m_accelerationBall * (m_Atime * m_Atime));
+
+
+	//m_heightMaxBall = m_heightZeroBall;
+
+	//if (m_heightMaxBall > m_heightStopBall)
+	//{
+	//	if (isFreeFallBall)
+	//	{
+	//		m_heightNewBall = m_heightBall + m_velocityBall * m_Atime + (0.5 * m_Atime * m_Atime );
+	//		m_finalPositionBall = glm::vec2(512.0f, m_heightBall);
+	//		if (m_heightNewBall > 0)
+	//		{
+	//			m_Atime = m_timeLastBall + (2 * sqrt(2 * m_heightMaxBall) / m_gravity);
+	//			isFreeFallBall = false;
+	//			m_timeLastBall = m_timeBall + m_Atime;
+	//			m_heightBall = 0.0f;
+	//		}
+	//		else
+	//		{
+	//			m_timeBall = m_timeBall + m_Atime;
+	//			m_velocityBall = m_velocityBall - (m_gravity * m_Atime);
+	//			m_heightBall = m_heightNewBall;
+	//		}
+	//	}
+	//	else
+	//	{
+	//		m_Atime += m_time;
+	//		m_velocityMaxBall = m_velocityMaxBall * 0.75;
+	//		m_velocityBall = m_velocityMaxBall;
+	//		isFreeFallBall = true;
+	//		m_heightBall = 0;
+	//	}
+	//	m_heightMaxBall = ((0.5 * m_velocityMaxBall * m_velocityMaxBall) / m_gravity);
+	//}
+
+
+
+	//m_finalPosition = glm::vec2(0.0f, m_heightBall);
+
 	m_Atime += m_time;
+	//m_pPlanet->setPosition(m_finalPositionBall);
 	m_pShip->setPosition(m_finalPosition);
 }

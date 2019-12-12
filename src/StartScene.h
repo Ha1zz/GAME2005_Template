@@ -9,6 +9,10 @@
 #include "Planet.h"
 #include "Hero.h"
 #include "Villain.h"
+#include "MoveState.h"
+#include "Mine.h"
+#include "CollisionManager.h"
+#include "SoundManager.h"
 
 #include <iostream>
 using namespace std;
@@ -32,8 +36,12 @@ private:
 
 	Ship* m_pShip;
 	Planet* m_pPlanet;
+	Mine* m_pMine;
+
 	Hero* m_pHero;
 	Villain* m_pVillain;
+
+	MoveState m_moveState;
 
 	glm::vec2 m_mousePosition;
 
@@ -57,15 +65,42 @@ private:
 
 
 	glm::vec2 m_finalPosition = glm::vec2(0.0f, 0.0f);
-
-	float m_velocity = 100.0f;
+	glm::vec2 m_velocity;
+	//float m_velocity;
 	float m_velocityX = 0.0f;
 	float m_velocityY = 0.0f;
-
 	glm::vec2 m_acceleration = glm::vec2(0.0f, 0.0f);
+	glm::vec2 m_speed = glm::vec2(5.0f, 5.0f);
 	float m_accelerationX = 0.0f;
-	
 	float m_forceX = 0.4f;
+
+
+	float m_massBall = 3.2f;
+	glm::vec2 m_finalPositionBall = glm::vec2(0.0f, 0.0f);
+	float m_velocityMaxBall = 0.0f;
+	float m_velocityBall = 0.0f;
+	float m_velocityXBall = 0.0f;
+	float m_velocityYBall = 0.0f;
+	glm::vec2 m_accelerationBall = glm::vec2(0.0f, 0.0f);
+	//glm::vec2 m_speedBall = glm::vec2(4.0f, 4.0f);
+	float m_accelerationXBall = 0.0f;
+	float m_accelerationYBall = 0.0f;
+	float m_forceXBall = 0.4f;
+	float m_forceYBall = 0.0f;
+	float m_heightMaxBall = 0.0f;
+	float m_heightStopBall = 0.01;
+	float m_heightTempBall = 0.0f;
+	float m_heightZeroBall = 0.0f;
+	float m_heightBall = 0.0f;
+	float m_heightNewBall = 0.0f;
+
+	bool isFreeFallBall = true;
+	float m_timeContactBall = 0.0f;
+	float m_timeLastBall = 0.0f;
+	float m_timeBall = 0.0f;
+
+
+	glm::vec2 velocity_vectorBall = glm::vec2(0.0f,0.0f);
 
 	float m_time = 0.016667f;
 	float m_Atime = 0.016667f; // accumulated time

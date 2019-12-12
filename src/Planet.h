@@ -27,6 +27,10 @@ public:
 
 private:
 	Tile* m_currentTile;
+
+	void m_move();
+	void m_checkBounds();
+	void m_reset();
 };
 
 

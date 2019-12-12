@@ -10,7 +10,7 @@ Ship::Ship() :
 	m_maxSpeed(5.0f), m_currentDirection(0.0f), m_turnSpeed(2.0f), m_steerForce(0.1f), m_currentTile(NULL)
 {
 
-	string fileName = "../Assets/textures/grenade.jpg";
+	string fileName = "../Assets/textures/brick.png";
 	TheTextureManager::Instance()->load(fileName,
 		"ship", TheGame::Instance()->getRenderer());
 
@@ -90,14 +90,14 @@ void Ship::turnLeft()
 
 void Ship::move()
 {
-	if (Util::distance(getPosition(), m_target) > 1.0f) {
-		glm::vec2 desired = Util::normalize(m_target - getPosition()) * m_maxSpeed;
-		setVelocity(desired);
+	//if (Util::distance(getPosition(), m_target) > 1.0f) {
+	//	glm::vec2 desired = Util::normalize(m_target - getPosition()) * m_maxSpeed;
+	//	setVelocity(desired);
 
 
-		glm::vec2 newPosition = getPosition() + getVelocity();
-		setPosition(newPosition);
-	}
+	//	glm::vec2 newPosition = getPosition() + getVelocity();
+	//	setPosition(newPosition);
+	//}
 	
 
 }
